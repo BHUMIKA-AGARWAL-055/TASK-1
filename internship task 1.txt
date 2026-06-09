@@ -1,0 +1,28 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 1. Load and Standardise Dataset Structure
+df = pd.read_csv("unemployment_data.csv")
+df.columns = df.columns.str.strip()
+df['Date'] = pd.to_datetime(df['Date'].str.strip(), format='%d-%m-%Y')
+
+# 2. Split into Timeline Horizons for Shock Analysis
+pre_shock = df[df['Date'] < '2020-04-01']
+lockdown_peak = df[(df['Date'] >= '2020-04-01') & (df['Date'] <= '2020-05-31')]
+
+# 3. Macro Metric Computations
+print(f"Pre-COVID Structural Baseline Avg: {pre_shock['Unemployment_Rate'].mean():.2f}%")
+print(f"Lockdown Peak Disruption Avg: {lockdown_peak['Unemployment_Rate'].mean():.2f}%")
+
+# 4. Generate Comparative Trend Visualization
+plt.figure(figsize=(14, 7))
+sns.lineplot(data=df, x='Date', y='Unemployment_Rate', hue='Area', marker='o', linewidth=2.5)
+plt.axvspan('2020-04-01', '2020-05-31', color='red', alpha=0.15, label='National Lockdown Peak')
+plt.title("Structural Shift in Indian Unemployment Rates (Rural vs Urban)", fontsize=14, weight='bold')
+plt.ylabel("Unemployment Rate (%)", fontsize=12)
+plt.xlabel("Timeline", fontsize=12)
+plt.legend()
+plt.grid(True, linestyle='--')
+plt.show()
